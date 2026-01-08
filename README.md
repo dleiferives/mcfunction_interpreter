@@ -458,6 +458,7 @@ The following Minecraft features are **not implemented** due to the scope of thi
    - Structure loading
    - Boss bars
    - Scoreboard teams
+   - Different `pack_format` values
 
 ### What This Interpreter IS Good For
 
