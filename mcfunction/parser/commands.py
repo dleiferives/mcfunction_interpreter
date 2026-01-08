@@ -6,10 +6,10 @@ This file defines the data structures representing parsed Minecraft commands.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Union, Optional, Any
+from typing import Any
 
-from mcfunction.parser.selector import EntitySelector
 from mcfunction.parser.nbt import NBTValue
+from mcfunction.parser.selector import EntitySelector
 
 
 # Scoreboard commands
@@ -17,7 +17,7 @@ from mcfunction.parser.nbt import NBTValue
 class ScoreboardObjectivesAdd:
     objective: str
     criteria: str
-    display_name: Optional[str] = None
+    display_name: str | None = None
 
 
 @dataclass
@@ -33,7 +33,7 @@ class ScoreboardObjectivesList:
 @dataclass
 class ScoreboardObjectivesSetDisplay:
     slot: str
-    objective: Optional[str] = None
+    objective: str | None = None
 
 
 @dataclass
@@ -60,7 +60,7 @@ class ScoreboardPlayersRemove:
 @dataclass
 class ScoreboardPlayersReset:
     targets: str
-    objective: Optional[str] = None
+    objective: str | None = None
 
 
 @dataclass
@@ -76,7 +76,7 @@ class ScoreboardPlayersOperation:
 @dataclass
 class DataGet:
     target: str  # storage, entity, or block
-    path: Optional[str] = None
+    path: str | None = None
 
 
 @dataclass
@@ -90,8 +90,9 @@ class DataModify:
     target: str
     path: str
     operation: str  # set, append, prepend, insert, merge
-    source: Optional[str] = None  # source path or value
-    index: Optional[int] = None  # for insert operation
+    source: str | None = None  # source path
+    value: NBTValue | None = None  # NBT value for value operations
+    index: int | None = None  # for insert operation
 
 
 @dataclass
@@ -134,11 +135,11 @@ class ExecuteAnchored(ExecuteSubcommand):
 
 @dataclass
 class ExecuteFacing(ExecuteSubcommand):
-    target: Optional[EntitySelector] = None  # When facing a selector
-    anchor: Optional[str] = None  # 'eyes' or 'feet'
-    x: Optional[float] = None  # When facing coordinates
-    y: Optional[float] = None
-    z: Optional[float] = None
+    target: EntitySelector | None = None  # When facing a selector
+    anchor: str | None = None  # 'eyes' or 'feet'
+    x: float | None = None  # When facing coordinates
+    y: float | None = None
+    z: float | None = None
 
 
 @dataclass
@@ -155,26 +156,26 @@ class ExecuteUnless(ExecuteSubcommand):
 
 @dataclass
 class ExecutePositioned(ExecuteSubcommand):
-    selector: Optional[EntitySelector] = None
-    x: Optional[float] = None
-    y: Optional[float] = None
-    z: Optional[float] = None
+    selector: EntitySelector | None = None
+    x: float | None = None
+    y: float | None = None
+    z: float | None = None
 
 
 @dataclass
 class ExecuteRotated(ExecuteSubcommand):
-    yaw: Optional[float] = None
-    pitch: Optional[float] = None
-    selector: Optional[EntitySelector] = None
+    yaw: float | None = None
+    pitch: float | None = None
+    selector: EntitySelector | None = None
 
 
 @dataclass
 class ExecuteStore(ExecuteSubcommand):
     store_type: str  # 'result' or 'success'
     target: str
-    path: Optional[str] = None
-    type: Optional[str] = None  # 'byte', 'short', 'int', 'long', 'float', 'double'
-    scale: Optional[float] = None
+    path: str | None = None
+    type: str | None = None  # 'byte', 'short', 'int', 'long', 'float', 'double'
+    scale: float | None = None
 
 
 @dataclass
@@ -195,41 +196,41 @@ class ExecuteSummon(ExecuteSubcommand):
 @dataclass
 class Execute:
     subcommands: list[ExecuteSubcommand]
-    command: Union[
-        ScoreboardObjectivesAdd,
-        ScoreboardObjectivesRemove,
-        ScoreboardObjectivesList,
-        ScoreboardObjectivesSetDisplay,
-        ScoreboardPlayersSet,
-        ScoreboardPlayersAdd,
-        ScoreboardPlayersRemove,
-        ScoreboardPlayersReset,
-        ScoreboardPlayersOperation,
-        DataGet,
-        DataMerge,
-        DataModify,
-        DataRemove,
-        FunctionCall,
-        Execute,  # For nested execute chains
-        None  # For chain execution
-    ]
+    command: (
+        ScoreboardObjectivesAdd
+        | ScoreboardObjectivesRemove
+        | ScoreboardObjectivesList
+        | ScoreboardObjectivesSetDisplay
+        | ScoreboardPlayersSet
+        | ScoreboardPlayersAdd
+        | ScoreboardPlayersRemove
+        | ScoreboardPlayersReset
+        | ScoreboardPlayersOperation
+        | DataGet
+        | DataMerge
+        | DataModify
+        | DataRemove
+        | FunctionCall
+        | Execute
+        | None
+    )
 
 
 # All command types
-Command = Union[
-    ScoreboardObjectivesAdd,
-    ScoreboardObjectivesRemove,
-    ScoreboardObjectivesList,
-    ScoreboardObjectivesSetDisplay,
-    ScoreboardPlayersSet,
-    ScoreboardPlayersAdd,
-    ScoreboardPlayersRemove,
-    ScoreboardPlayersReset,
-    ScoreboardPlayersOperation,
-    DataGet,
-    DataMerge,
-    DataModify,
-    DataRemove,
-    FunctionCall,
-    Execute,
-]
+Command = (
+    ScoreboardObjectivesAdd
+    | ScoreboardObjectivesRemove
+    | ScoreboardObjectivesList
+    | ScoreboardObjectivesSetDisplay
+    | ScoreboardPlayersSet
+    | ScoreboardPlayersAdd
+    | ScoreboardPlayersRemove
+    | ScoreboardPlayersReset
+    | ScoreboardPlayersOperation
+    | DataGet
+    | DataMerge
+    | DataModify
+    | DataRemove
+    | FunctionCall
+    | Execute
+)

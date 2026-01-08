@@ -222,7 +222,7 @@ def parse_data_merge(location: str, nbt: NBTCompound) -> DataMerge:
     return DataMerge(target=location, nbt=nbt)
 
 
-def parse_data_modify(location: str, path: str, op: str, target_path: str | None, value: NBTValue) -> DataModify:
+def parse_data_modify(location: str, path: str, op: str, target_path: str | None, value: NBTValue | None) -> DataModify:
     """Parse data modify command.
 
     Args:
