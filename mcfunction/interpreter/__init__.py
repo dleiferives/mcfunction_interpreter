@@ -1,12 +1,6 @@
 """Minecraft function execution and state management."""
 
-# Type-only imports for forward references
 from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from mcfunction.interpreter.executor import execute_command, execute_function
 
 from mcfunction.interpreter.builtins.data import (
     exec_data_get,
@@ -26,6 +20,12 @@ from mcfunction.interpreter.builtins.scoreboard import (
     exec_scoreboard_players_set,
 )
 from mcfunction.interpreter.context import ExecutionContext
+from mcfunction.interpreter.executor import (
+    FunctionRegistry,
+    Interpreter,
+    execute_command,
+    execute_function,
+)
 from mcfunction.interpreter.state import GameState
 
 __all__ = [
@@ -33,6 +33,8 @@ __all__ = [
     "ExecutionContext",
     "execute_command",
     "execute_function",
+    "Interpreter",
+    "FunctionRegistry",
     "exec_scoreboard_objectives_add",
     "exec_scoreboard_objectives_remove",
     "exec_scoreboard_objectives_list",
