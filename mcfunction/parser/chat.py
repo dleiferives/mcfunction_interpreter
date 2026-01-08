@@ -8,7 +8,7 @@ This module provides parsers for chat-related commands:
 from __future__ import annotations
 
 from mcfunction.parser.commands import Say, Tellraw
-from mcfunction.parser.lexer import tokenize_compact, TokenType
+from mcfunction.parser.lexer import tokenize_compact
 
 
 class ChatParser:
@@ -52,6 +52,10 @@ class ChatParser:
         Raises:
             ValueError: If message is missing
         """
+        # Skip the 'say' keyword if present
+        if self.pos < len(self.tokens) and self.tokens[self.pos].value == "say":
+            self.pos += 1
+
         if self.pos >= len(self.tokens):
             raise ValueError("say command requires a message")
 
@@ -77,10 +81,14 @@ class ChatParser:
         Raises:
             ValueError: If targets or message is missing
         """
+        # Skip the 'tellraw' keyword if present
+        if self.pos < len(self.tokens) and self.tokens[self.pos].value == "tellraw":
+            self.pos += 1
+
         if self.pos >= len(self.tokens):
             raise ValueError("tellraw command requires targets")
 
-        # First token is the target selector/player
+        # First token after tellraw is the target selector/player
         targets = self.consume()
 
         if self.pos >= len(self.tokens):
@@ -90,51 +98,59 @@ class ChatParser:
         # We need to reconstruct JSON tokens carefully to preserve structure
         message_parts = []
 
-        # Track brace/bracket depth for JSON
-        brace_depth = 0
-        bracket_depth = 0
-        in_string = False
-        escape_next = False
-
         # Look ahead to reconstruct JSON properly
         remaining_tokens = self.tokens[self.pos:]
 
+        # Use a simple algorithm: collect tokens and join with smart spacing
         for i, token in enumerate(remaining_tokens):
             token_value = token.value
-
-            # Simple JSON reconstruction
-            # This handles the basic case where tokens represent JSON structure
-            if not in_string:
-                if token_value in '{':
-                    brace_depth += 1
-                elif token_value in '}':
-                    brace_depth -= 1
-                elif token_value in '[':
-                    bracket_depth += 1
-                elif token_value in ']':
-                    bracket_depth -= 1
-                elif token_value.startswith('"') or token_value.startswith("'"):
-                    in_string = True
-
-            if in_string and (token_value.endswith('"') or token_value.endswith("'")) and not token_value.startswith('\\'):
-                in_string = False
-
             message_parts.append(token_value)
-
-            # If we're back to zero depth and not in string, we could potentially stop
-            # But to be safe, we'll consume all remaining tokens
             self.pos += 1
-
-            # If we're not in a string and depths are zero, and next token isn't JSON-like,
-            # we might want to stop, but let's just consume everything to be consistent
 
         if not message_parts:
             raise ValueError("tellraw command requires a message")
 
-        # This is a simplified reconstruction - ideally we'd use the original string
-        # But for now, joining with spaces is what we get from tokens
-        message = " ".join(message_parts)
+        # Reconstruct message by joining tokens with minimal spacing
+        # For compact JSON: no spaces unless needed for readability
+        message = self._reconstruct_json_compact(message_parts)
         return Tellraw(targets=targets, message=message)
+
+    def _reconstruct_json_compact(self, tokens: list[str]) -> str:
+        """Reconstruct JSON from tokens in a compact format."""
+        if not tokens:
+            return ""
+
+        result = []
+
+        for i, token in enumerate(tokens):
+            # QUOTED_STRING tokens already include their quotes
+            if token.startswith('"') or token.startswith("'"):
+                if i > 0 and tokens[i-1] not in ['{', '[', ':', ',']:
+                    result.append(" ")
+                result.append(token)
+            elif token in ['{', '[']:
+                # Start of object/array
+                if i > 0 and tokens[i-1] not in ['{', '[', ':', ',']:
+                    result.append(" ")
+                result.append(token)
+            elif token in ['}', ']']:
+                # End of object/array
+                result.append(token)
+                # Add space before next if needed for readability
+                if i < len(tokens) - 1 and tokens[i+1] not in ['}', ']', ',', ':']:
+                    result.append(" ")
+            elif token == ',':
+                result.append(",")
+                result.append(" ")
+            elif token == ':':
+                result.append(":")
+            else:
+                # Numbers, booleans, null, etc.
+                if i > 0 and tokens[i-1] not in ['{', '[', ':', ',']:
+                    result.append(" ")
+                result.append(token)
+
+        return "".join(result)
 
 
 def parse_say(command: str) -> Say:
@@ -174,64 +190,7 @@ def parse_tellraw(command: str) -> Tellraw:
     Raises:
         ValueError: If command syntax is invalid
     """
-    # First, validate by tokenizing
-    tokens = [t for t in tokenize_compact(command) if t.type not in (TokenType.WHITESPACE, TokenType.NEWLINE)]
-
-    if len(tokens) < 2:
-        raise ValueError("tellraw command requires targets and message")
-    if len(tokens) < 3:
-        raise ValueError("tellraw command requires a message")
-
-    if tokens[0].value != "tellraw":
-        raise ValueError("Not a tellraw command")
-
-    # Get the target selector/player from the token
-    targets = tokens[1].value
-
-    # Find the position after "tellraw" keyword in original command
-    command_start = command.find("tellraw") + 7  # length of "tellraw"
-    after_keyword = command[command_start:].lstrip()
-
-    # Find the end of the target by looking for where it ends
-    # This handles selectors like @a, @p[type=player], player names, etc.
-    targets_end = 0
-    bracket_depth = 0
-    in_brackets = False
-
-    for i, char in enumerate(after_keyword):
-        if char == '[':
-            in_brackets = True
-            bracket_depth += 1
-        elif char == ']':
-            bracket_depth -= 1
-            if bracket_depth == 0:
-                in_brackets = False
-        elif char in " \t":
-            if not in_brackets:
-                targets_end = i
-                break
-        elif i == 0:
-            # First character of targets
-            continue
-        elif targets_end == 0:
-            # We're still in the target specification
-            continue
-
-    # If we didn't find a space (single word targets), targets_end is 0
-    # In that case, we need to find where the target ends
-    if targets_end == 0:
-        # Find first whitespace or non-target character
-        for i, char in enumerate(after_keyword):
-            if char in " \t{[\"":
-                targets_end = i
-                break
-        if targets_end == 0:
-            targets_end = len(after_keyword)  # Use full string if no delimiter found
-
-    # Everything after the target is the message
-    message = after_keyword[targets_end:].lstrip()
-
-    if not message:
-        raise ValueError("tellraw command requires a message")
-
-    return Tellraw(targets=targets, message=message)
+    # Tokenize and use the ChatParser for consistency
+    tokens = tokenize_compact(command)
+    parser = ChatParser(tokens)
+    return parser.parse_tellraw()

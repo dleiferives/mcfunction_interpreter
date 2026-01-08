@@ -15,7 +15,7 @@ def resolve_targets(state: GameState, targets: str) -> list[str]:
     For this interpreter, we:
     - Treat direct player names as-is
     - Treat @s as the "executor" (we'll use a placeholder)
-    - Treat @a, @e, @p, @r as requiring player context (we'll resolve to placeholder)
+    - Treat @a, @e, @p, @r as requiring player context (we'll resolve to available players)
 
     Args:
         state: The current game state (for context)
@@ -36,21 +36,35 @@ def resolve_targets(state: GameState, targets: str) -> list[str]:
         # If parsing fails, treat as literal
         return [targets]
 
+    # Get available players from state
+    available_players = list(state.players)
+
     # For @s, we need a way to know the current executor
-    # For this interpreter, we'll use a special placeholder
+    # For this interpreter, we'll use the first player or a placeholder
     if selector.selector_type == "s":
+        if available_players:
+            return [available_players[0]]
         return ["@s"]
 
-    # For @a, @e, @p, @r - in a real implementation, these would query entities
-    # For this interpreter, we'll return a placeholder indicating multiple targets
-    # This is a simplified approach for demonstration
+    # For @a - all players
     if selector.selector_type == "a":
-        return ["@a"]
-    elif selector.selector_type == "e":
-        return ["@e"]
-    elif selector.selector_type == "p":
+        return available_players if available_players else ["@a"]
+
+    # For @e - all entities (players in this simplified interpreter)
+    if selector.selector_type == "e":
+        return available_players if available_players else ["@e"]
+
+    # For @p - nearest player (first in list for simplicity)
+    if selector.selector_type == "p":
+        if available_players:
+            return [available_players[0]]
         return ["@p"]
-    elif selector.selector_type == "r":
+
+    # For @r - random player (random from list or first)
+    if selector.selector_type == "r":
+        if available_players:
+            import random
+            return [random.choice(available_players)]
         return ["@r"]
 
     return [targets]

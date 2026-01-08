@@ -330,13 +330,14 @@ class DataStorage:
 class GameState:
     """Main game state container for the Minecraft interpreter.
 
-    Tracks all game state including scoreboards and data storage.
+    Tracks all game state including scoreboards, data storage, and players.
     """
 
     def __init__(self):
         """Initialize empty game state."""
         self.scoreboards = ScoreboardState()
         self.storage = DataStorage()
+        self.players: set[str] = set()  # Track registered players for testing
 
     # Scoreboard methods
     def get_score(self, player: str, objective: str) -> int:
