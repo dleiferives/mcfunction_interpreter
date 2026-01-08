@@ -10,4 +10,14 @@ from mcfunction.parser.nbt import parse_snbt
 from mcfunction.parser.selector import parse_selector
 from mcfunction.datapack import DataPack, load_datapack, FunctionTag
 
-__all__ = ["parse_snbt", "parse_selector", "DataPack", "load_datapack", "FunctionTag"]
+from mcfunction.cli import run_file, repl
+
+__all__ = [
+    "parse_snbt",
+    "parse_selector",
+    "DataPack",
+    "load_datapack",
+    "FunctionTag",
+    "run_file",
+    "repl"
+]
