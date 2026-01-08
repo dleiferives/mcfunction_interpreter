@@ -6,7 +6,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from mcfunction.interpreter.context import ExecutionContext
     from mcfunction.interpreter.executor import execute_command, execute_function
 
 from mcfunction.interpreter.builtins.data import (
@@ -26,6 +25,7 @@ from mcfunction.interpreter.builtins.scoreboard import (
     exec_scoreboard_players_reset,
     exec_scoreboard_players_set,
 )
+from mcfunction.interpreter.context import ExecutionContext
 from mcfunction.interpreter.state import GameState
 
 __all__ = [

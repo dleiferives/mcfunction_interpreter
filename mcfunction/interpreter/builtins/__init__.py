@@ -8,6 +8,10 @@ from .data import (
     exec_data_modify,
     exec_data_remove,
 )
+from .execute import (
+    exec_execute_chain,
+    exec_execute_run,
+)
 from .scoreboard import (
     exec_scoreboard_objectives_add,
     exec_scoreboard_objectives_list,
@@ -34,4 +38,6 @@ __all__ = [
     "exec_data_merge",
     "exec_data_modify",
     "exec_data_remove",
+    "exec_execute_chain",
+    "exec_execute_run",
 ]
