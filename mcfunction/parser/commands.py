@@ -8,6 +8,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Union, Optional, Any
 
+from mcfunction.parser.selector import EntitySelector
+from mcfunction.parser.nbt import NBTValue
+
 
 # Scoreboard commands
 @dataclass
@@ -79,7 +82,7 @@ class DataGet:
 @dataclass
 class DataMerge:
     target: str
-    nbt: Any  # NBTCompound
+    nbt: NBTValue
 
 
 @dataclass
@@ -107,17 +110,32 @@ class FunctionCall:
 @dataclass
 class ExecuteSubcommand:
     """Base class for execute subcommands."""
-    type: str
 
 
 @dataclass
 class ExecuteAs(ExecuteSubcommand):
-    selector: str
+    selector: EntitySelector
 
 
 @dataclass
 class ExecuteAt(ExecuteSubcommand):
-    selector: str
+    selector: EntitySelector
+
+
+@dataclass
+class ExecuteAlign(ExecuteSubcommand):
+    axes: str  # e.g., "xyz", "xy", "xz", etc.
+
+
+@dataclass
+class ExecuteAnchored(ExecuteSubcommand):
+    anchor: str  # 'eyes' or 'feet'
+
+
+@dataclass
+class ExecuteFacing(ExecuteSubcommand):
+    target: EntitySelector
+    anchor: Optional[str] = None  # 'eyes' or 'feet'
 
 
 @dataclass
@@ -133,10 +151,27 @@ class ExecuteUnless(ExecuteSubcommand):
 
 
 @dataclass
+class ExecutePositioned(ExecuteSubcommand):
+    selector: Optional[EntitySelector] = None
+    x: Optional[float] = None
+    y: Optional[float] = None
+    z: Optional[float] = None
+
+
+@dataclass
+class ExecuteRotated(ExecuteSubcommand):
+    yaw: Optional[float] = None
+    pitch: Optional[float] = None
+    selector: Optional[EntitySelector] = None
+
+
+@dataclass
 class ExecuteStore(ExecuteSubcommand):
     store_type: str  # 'result' or 'success'
     target: str
     path: Optional[str] = None
+    type: Optional[str] = None  # 'byte', 'short', 'int', 'long', 'float', 'double'
+    scale: Optional[float] = None
 
 
 @dataclass
@@ -145,9 +180,12 @@ class Execute:
     command: Union[
         ScoreboardObjectivesAdd,
         ScoreboardObjectivesRemove,
+        ScoreboardObjectivesList,
+        ScoreboardObjectivesSetDisplay,
         ScoreboardPlayersSet,
         ScoreboardPlayersAdd,
         ScoreboardPlayersRemove,
+        ScoreboardPlayersReset,
         ScoreboardPlayersOperation,
         DataGet,
         DataMerge,
