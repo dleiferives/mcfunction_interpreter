@@ -21,6 +21,13 @@ from mcfunction.parser.selector import (
     SelectorArgValue,
     parse_selector,
 )
+from mcfunction.parser.data import (
+    parse_data_get,
+    parse_data_merge,
+    parse_data_modify,
+    parse_data_remove,
+    parse_data_command,
+)
 
 __all__ = [
     "parse_snbt",
@@ -44,4 +51,9 @@ __all__ = [
     "parse_scoreboard_players_remove",
     "parse_scoreboard_players_reset",
     "parse_scoreboard_players_operation",
+    "parse_data_get",
+    "parse_data_merge",
+    "parse_data_modify",
+    "parse_data_remove",
+    "parse_data_command",
 ]
