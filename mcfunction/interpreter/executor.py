@@ -25,6 +25,8 @@ from mcfunction.interpreter.builtins import (
     exec_scoreboard_players_remove,
     exec_scoreboard_players_reset,
     exec_scoreboard_players_set,
+    exec_say,
+    exec_tellraw,
 )
 from mcfunction.interpreter.context import ExecutionContext
 from mcfunction.interpreter.state import GameState
@@ -45,6 +47,8 @@ from mcfunction.parser.commands import (
     ScoreboardPlayersRemove,
     ScoreboardPlayersReset,
     ScoreboardPlayersSet,
+    Say,
+    Tellraw,
 )
 
 
@@ -334,6 +338,14 @@ class Interpreter:
             elif isinstance(command, FunctionCall):
                 # Execute function call - use internal method to avoid double error handling
                 self._execute_function(state, context, command.function_path)
+                self.statistics.increment_success()
+
+            elif isinstance(command, Say):
+                exec_say(state, command.message)
+                self.statistics.increment_success()
+
+            elif isinstance(command, Tellraw):
+                exec_tellraw(state, command.targets, command.message)
                 self.statistics.increment_success()
 
             else:

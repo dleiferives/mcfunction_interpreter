@@ -18,6 +18,8 @@ from mcfunction.parser.commands import (
     ExecuteOn,
     ExecuteSummon,
     FunctionCall,
+    Say,
+    Tellraw,
 )
 from mcfunction.parser.lexer import Lexer, LexToken, TokenType, tokenize, tokenize_compact
 from mcfunction.parser.nbt import parse_snbt
@@ -50,6 +52,10 @@ from mcfunction.parser.function_execute import (
     parse_function_call,
     parse_execute,
     parse_command_from_tokens,
+)
+from mcfunction.parser.chat import (
+    parse_say,
+    parse_tellraw,
 )
 from mcfunction.datapack import (
     DataPack,
@@ -104,6 +110,12 @@ __all__ = [
     "ExecuteOn",
     "ExecuteSummon",
     "FunctionCall",
+    # Chat command types
+    "Say",
+    "Tellraw",
+    # Chat command parsers
+    "parse_say",
+    "parse_tellraw",
     # Datapack types
     "DataPack",
     "load_datapack",

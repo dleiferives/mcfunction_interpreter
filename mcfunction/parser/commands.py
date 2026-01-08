@@ -216,6 +216,18 @@ class Execute:
     )
 
 
+# Chat commands
+@dataclass
+class Say:
+    message: str
+
+
+@dataclass
+class Tellraw:
+    targets: str  # Player selector or name
+    message: str  # JSON message payload
+
+
 # All command types
 Command = (
     ScoreboardObjectivesAdd
@@ -233,4 +245,6 @@ Command = (
     | DataRemove
     | FunctionCall
     | Execute
+    | Say
+    | Tellraw
 )

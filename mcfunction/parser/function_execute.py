@@ -772,5 +772,49 @@ def parse_command_from_tokens(tokens: list) -> Any:
         text = " ".join(t.value for t in tokens)
         return parse_execute(text)
 
+    # Handle say command
+    if first_token == "say":
+        from mcfunction.parser.commands import Say
+        if len(tokens) < 2:
+            raise ValueError("say command requires a message")
+        # Reconstruct the message from all remaining tokens
+        message = " ".join(t.value for t in tokens[1:])
+        return Say(message=message)
+
+    # Handle tellraw command
+    if first_token == "tellraw":
+        from mcfunction.parser.commands import Tellraw
+        if len(tokens) < 3:
+            raise ValueError("tellraw command requires targets and message")
+        targets = tokens[1].value
+        # Smart JSON reconstruction - join tokens for message but with minimal spaces
+        message_tokens = tokens[2:]
+        message_parts = []
+
+        # Reconstruct JSON more intelligently
+        for i, t in enumerate(message_tokens):
+            val = t.value
+
+            # Special handling for JSON tokens to minimize spaces
+            if i > 0:
+                prev_token = message_tokens[i-1]
+                prev_val = prev_token.value
+
+                # No space before these characters
+                if val in ":,}]" or prev_val in "{[,:":
+                    message_parts.append(val)
+                # No space after these characters
+                elif prev_val in "{[,":
+                    message_parts.append(val)
+                # Default: add space
+                else:
+                    message_parts.append(" " + val)
+            else:
+                message_parts.append(val)
+
+        # Join without extra processing
+        message = "".join(message_parts) if message_parts else ""
+        return Tellraw(targets=targets, message=message)
+
     # Unknown command
     raise ValueError(f"Unknown command: '{first_token}'")

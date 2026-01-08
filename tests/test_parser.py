@@ -41,6 +41,10 @@ from mcfunction.parser.function_execute import (
     parse_execute,
     parse_command_from_tokens,
 )
+from mcfunction.parser.chat import (
+    parse_say,
+    parse_tellraw,
+)
 from mcfunction.parser.commands import (
     ExecuteAs,
     ExecuteAt,
@@ -55,6 +59,8 @@ from mcfunction.parser.commands import (
     ExecuteIn,
     ExecuteOn,
     ExecuteSummon,
+    Say,
+    Tellraw,
 )
 
 
@@ -1018,6 +1024,87 @@ class TestComplexRealWorldExamples:
         assert isinstance(rotated, ExecuteRotated)
         assert rotated.selector is not None
         assert rotated.selector.selector_type == "p"
+
+
+class TestChatCommands:
+    """Test chat command parsers (say, tellraw)."""
+
+    def test_parse_say_basic(self):
+        """Test basic say command."""
+        cmd = "say Hello World!"
+        result = parse_say(cmd)
+        assert isinstance(result, Say)
+        assert result.message == "Hello World!"
+
+    def test_parse_say_message_only(self):
+        """Test say command with single word."""
+        cmd = "say hello"
+        result = parse_say(cmd)
+        assert isinstance(result, Say)
+        assert result.message == "hello"
+
+    def test_parse_say_empty_args(self):
+        """Test say command with no message raises error."""
+        with pytest.raises(ValueError, match="say command requires a message"):
+            parse_say("say")
+
+    def test_parse_say_long_message(self):
+        """Test say command with complex message."""
+        cmd = "say This is a longer message with multiple words"
+        result = parse_say(cmd)
+        assert isinstance(result, Say)
+        assert result.message == "This is a longer message with multiple words"
+
+    def test_parse_tellraw_basic(self):
+        """Test basic tellraw command."""
+        cmd = 'tellraw @a {"text":"Hello!"}'
+        result = parse_tellraw(cmd)
+        assert isinstance(result, Tellraw)
+        assert result.targets == "@a"
+        assert result.message == '{"text":"Hello!"}'
+
+    def test_parse_tellraw_player_name(self):
+        """Test tellraw with player name instead of selector."""
+        cmd = 'tellraw Steve {"text":"Welcome!"}'
+        result = parse_tellraw(cmd)
+        assert isinstance(result, Tellraw)
+        assert result.targets == "Steve"
+        assert result.message == '{"text":"Welcome!"}'
+
+    def test_parse_tellraw_complex_json(self):
+        """Test tellraw with complex JSON."""
+        cmd = 'tellraw @p {"text":"Click me","clickEvent":{"action":"run_command","value":"function my:button"}}'
+        result = parse_tellraw(cmd)
+        assert isinstance(result, Tellraw)
+        assert result.targets == "@p"
+        assert '{"text":"Click me"' in result.message
+
+    def test_parse_tellraw_missing_targets(self):
+        """Test tellraw without targets raises error."""
+        with pytest.raises(ValueError, match="tellraw command requires targets"):
+            parse_tellraw("tellraw")
+
+    def test_parse_tellraw_missing_message(self):
+        """Test tellraw without message raises error."""
+        with pytest.raises(ValueError, match="tellraw command requires a message"):
+            parse_tellraw("tellraw @a")
+
+    def test_parse_command_from_tokens_say(self):
+        """Test say command via parse_command_from_tokens."""
+        from mcfunction.parser.lexer import tokenize_compact
+        tokens = tokenize_compact("say Hello from tokens")
+        result = parse_command_from_tokens(tokens)
+        assert isinstance(result, Say)
+        assert result.message == "Hello from tokens"
+
+    def test_parse_command_from_tokens_tellraw(self):
+        """Test tellraw command via parse_command_from_tokens."""
+        from mcfunction.parser.lexer import tokenize_compact
+        tokens = tokenize_compact('tellraw @a {"text":"Test"}')
+        result = parse_command_from_tokens(tokens)
+        assert isinstance(result, Tellraw)
+        assert result.targets == "@a"
+        assert result.message == '{"text":"Test"}'
 
 
 if __name__ == "__main__":

@@ -23,6 +23,10 @@ from .scoreboard import (
     exec_scoreboard_players_reset,
     exec_scoreboard_players_set,
 )
+from .chat import (
+    exec_say,
+    exec_tellraw,
+)
 
 __all__ = [
     "exec_scoreboard_objectives_add",
@@ -40,4 +44,6 @@ __all__ = [
     "exec_data_remove",
     "exec_execute_chain",
     "exec_execute_run",
+    "exec_say",
+    "exec_tellraw",
 ]

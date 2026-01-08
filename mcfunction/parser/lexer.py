@@ -100,6 +100,7 @@ class Lexer:
             "gamemode", "give", "effect", "enchant", "tp", "teleport",
             "summon", "kill", "setblock", "fill", "clone", "spreadplayers",
             "trigger", "tag", "attribute", "get", "list",
+            "say", "tellraw",
             # Execute subcommand keywords
             "align", "anchored", "facing", "in", "on", "positioned", "rotated",
         ]
