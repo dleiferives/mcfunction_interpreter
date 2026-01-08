@@ -306,18 +306,40 @@ def repl() -> None:
             print(f"[ERROR] Unexpected error: {e}")
 
 
-if __name__ == "__main__":
-    # Allow running as a script for testing
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "repl":
-            repl()
-        elif len(sys.argv) >= 3 and sys.argv[1] == "run":
-            run_file(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else "minecraft:load")
-        else:
-            print("Usage:")
-            print("  python -m mcfunction.cli repl")
-            print("  python -m mcfunction.cli run <datapack_path> [function_path]")
-    else:
+def main() -> None:
+    """Main CLI entry point for the mcfun command."""
+    if len(sys.argv) == 1:
+        # No arguments - start REPL
+        repl()
+        return
+
+    # Handle help flags
+    if sys.argv[1] in ("-h", "--help", "help"):
+        print("MCFUNCTION INTERPRETER")
+        print("=" * 40)
         print("Usage:")
-        print("  python -m mcfunction.cli repl")
-        print("  python -m mcfunction.cli run <datapack_path> [function_path]")
+        print("  mcfun                                    Start interactive REPL")
+        print("  mcfun repl                              Start interactive REPL")
+        print("  mcfun run <datapack_path> [function]    Run specific function")
+        print("  mcfun <datapack_path> [function]        Shorthand run")
+        print()
+        print("Examples:")
+        print("  mcfun test_datapack test:load")
+        print("  python -m mcfunction.cli run test_datapack test:load")
+        return
+
+    if sys.argv[1] == "repl":
+        repl()
+    elif sys.argv[1] == "run" and len(sys.argv) >= 3:
+        run_file(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else "minecraft:load")
+    elif sys.argv[1] not in ("repl", "run"):
+        # Assume it's a datapack path with optional function path
+        datapack_path = sys.argv[1]
+        function_path = sys.argv[2] if len(sys.argv) > 2 else "minecraft:load"
+        run_file(datapack_path, function_path)
+    else:
+        print("Use 'mcfun --help' for usage information")
+
+
+if __name__ == "__main__":
+    main()
