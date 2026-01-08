@@ -51,6 +51,11 @@ from mcfunction.parser.function_execute import (
     parse_execute,
     parse_command_from_tokens,
 )
+from mcfunction.datapack import (
+    DataPack,
+    load_datapack,
+    FunctionTag,
+)
 
 __all__ = [
     "parse_snbt",
@@ -99,4 +104,8 @@ __all__ = [
     "ExecuteOn",
     "ExecuteSummon",
     "FunctionCall",
+    # Datapack types
+    "DataPack",
+    "load_datapack",
+    "FunctionTag",
 ]
