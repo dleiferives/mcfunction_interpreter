@@ -1,3 +1,7 @@
+**Disclaimer**: This project was created with the assistance of generative AI tools to help with code development, documentation, and testing.
+
+---
+
 # MCFunction Interpreter
 
 A Python-based interpreter for Minecraft datapacks that executes `.mcfunction` files with full support for `function`, `execute`, `scoreboard`, and `data` commands. This tool allows you to test and debug Minecraft datapack logic without launching the game.
@@ -557,3 +561,27 @@ MIT License - see LICENSE file for details.
 ## Credits
 
 Developed for Minecraft datapack developers to enable rapid prototyping and testing without game dependencies.
+
+## About This Project
+
+### Generative AI Usage
+
+This project was developed with assistance from generative AI tools throughout the development process. The AI contributed to:
+
+- **Code Architecture**: Design patterns and module structure
+- **Implementation**: Writing parser logic, interpreter engine, and command handlers
+- **Documentation**: Creating comprehensive README, docstrings, and usage examples
+- **Testing**: Generating test cases and edge case scenarios
+- **Error Handling**: Identifying potential issues and validation logic
+
+### Development Philosophy
+
+While generative AI accelerated development, the project maintains:
+- **Code Review**: All AI-generated code was reviewed and validated by a human developer
+- **Testing**: Comprehensive test coverage ensures reliability
+- **Type Safety**: Full type annotations for maintainability
+- **Real-World Testing**: The project includes a test datapack for manual verification
+
+### Transparency
+
+This disclaimer serves to acknowledge the collaborative nature of modern software development and to provide transparency about the tools used in creating this project. The final code reflects human oversight, debugging, and architectural decisions.
