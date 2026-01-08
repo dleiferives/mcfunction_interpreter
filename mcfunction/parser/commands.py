@@ -134,8 +134,11 @@ class ExecuteAnchored(ExecuteSubcommand):
 
 @dataclass
 class ExecuteFacing(ExecuteSubcommand):
-    target: EntitySelector
+    target: Optional[EntitySelector] = None  # When facing a selector
     anchor: Optional[str] = None  # 'eyes' or 'feet'
+    x: Optional[float] = None  # When facing coordinates
+    y: Optional[float] = None
+    z: Optional[float] = None
 
 
 @dataclass
@@ -175,6 +178,21 @@ class ExecuteStore(ExecuteSubcommand):
 
 
 @dataclass
+class ExecuteIn(ExecuteSubcommand):
+    dimension: str  # 'overworld', 'the_nether', 'the_end'
+
+
+@dataclass
+class ExecuteOn(ExecuteSubcommand):
+    target: str  # 'block', 'entity', 'bossbar', 'storage', 'players'
+
+
+@dataclass
+class ExecuteSummon(ExecuteSubcommand):
+    entity: str  # Entity type to summon
+
+
+@dataclass
 class Execute:
     subcommands: list[ExecuteSubcommand]
     command: Union[
@@ -192,6 +210,7 @@ class Execute:
         DataModify,
         DataRemove,
         FunctionCall,
+        Execute,  # For nested execute chains
         None  # For chain execution
     ]
 

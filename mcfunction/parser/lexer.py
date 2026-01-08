@@ -99,7 +99,9 @@ class Lexer:
             "block", "entity", "storage", "bossbar", "team", "chat",
             "gamemode", "give", "effect", "enchant", "tp", "teleport",
             "summon", "kill", "setblock", "fill", "clone", "spreadplayers",
-            "trigger", "tag", "attribute", "get", "list"
+            "trigger", "tag", "attribute", "get", "list",
+            # Execute subcommand keywords
+            "align", "anchored", "facing", "in", "on", "positioned", "rotated",
         ]
         self.keywords.sort(key=len, reverse=True)
 

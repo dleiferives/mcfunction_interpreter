@@ -1,6 +1,24 @@
 """Command and data structure parsing for Minecraft mcfunction syntax."""
 
-from mcfunction.parser.commands import Command
+from mcfunction.parser.commands import (
+    Command,
+    Execute,
+    ExecuteSubcommand,
+    ExecuteAs,
+    ExecuteAt,
+    ExecuteAlign,
+    ExecuteAnchored,
+    ExecuteFacing,
+    ExecuteIf,
+    ExecuteUnless,
+    ExecutePositioned,
+    ExecuteRotated,
+    ExecuteStore,
+    ExecuteIn,
+    ExecuteOn,
+    ExecuteSummon,
+    FunctionCall,
+)
 from mcfunction.parser.lexer import Lexer, LexToken, TokenType, tokenize, tokenize_compact
 from mcfunction.parser.nbt import parse_snbt
 from mcfunction.parser.scoreboard import (
@@ -27,6 +45,11 @@ from mcfunction.parser.data import (
     parse_data_modify,
     parse_data_remove,
     parse_data_command,
+)
+from mcfunction.parser.function_execute import (
+    parse_function_call,
+    parse_execute,
+    parse_command_from_tokens,
 )
 
 __all__ = [
@@ -56,4 +79,24 @@ __all__ = [
     "parse_data_modify",
     "parse_data_remove",
     "parse_data_command",
+    "parse_function_call",
+    "parse_execute",
+    "parse_command_from_tokens",
+    # Execute command types
+    "Execute",
+    "ExecuteSubcommand",
+    "ExecuteAs",
+    "ExecuteAt",
+    "ExecuteAlign",
+    "ExecuteAnchored",
+    "ExecuteFacing",
+    "ExecuteIf",
+    "ExecuteUnless",
+    "ExecutePositioned",
+    "ExecuteRotated",
+    "ExecuteStore",
+    "ExecuteIn",
+    "ExecuteOn",
+    "ExecuteSummon",
+    "FunctionCall",
 ]
